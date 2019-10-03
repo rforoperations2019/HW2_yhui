@@ -70,3 +70,22 @@ leaflet(data = rivers) %>%
 ```
 
 
+# Map with Points: Circle Markers with different colors indicating different request origins
+
+```{r, markers}
+#import potholes information
+potholes <- read.csv("311_potholes.csv")
+
+
+# Custom Palette
+pal311 <- colorFactor(c("#ffe26b", "#6b88ff","#84ec6c","#b77ecc","#b6666f","#f53163","#388087","#2ffb01"), c("Call Center","Twitter","Website","Report2Gov iOS","Report2Gov","Andriod Control Panel","Email","Text Message"))
+
+leaflet() %>%
+  #add markers on OpenStreetMap
+  addProviderTiles("OpenStreetMap.HOT") %>%
+  addCircleMarkers(data = potholes, lng = ~X, lat = ~Y, radius = 0.1, color = ~pal311(REQUEST_ORIGIN)) %>%
+  addLegend(position = "bottomleft" , pal = pal311, values = potholes$REQUEST_ORIGIN, title = "Request Origin") 
+  
+```
+
+
