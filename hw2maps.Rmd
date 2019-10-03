@@ -56,3 +56,17 @@ leaflet() %>%
 
 ```
 
+#Map with lines: Lines with different widths indicating different scalerank of the rivers on world map
+
+```{r, lines}
+#import data recording river information
+rivers <- readOGR("./ne_10m_rivers_lake_centerlines")
+# define a set of widths to be used later in addPolylines ()
+width<-c(1,2,3,4,5,6,7,8,9,10)/5
+leaflet(data = rivers) %>%
+  addProviderTiles("Esri.WorldImagery", options = providerTileOptions(noWrap = TRUE)) %>%
+  #river with higher scalerank is drawn in wider line
+  addPolylines(color = "#d80505",weight=width[rivers@data$scalerank],opacity=0.7,popup = ~name)
+```
+
+
