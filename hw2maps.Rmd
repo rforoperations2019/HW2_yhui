@@ -89,3 +89,16 @@ leaflet() %>%
 ```
 
 
+# Map with Polygons: draw blue polygons where the land area is larger than average and red polygons where the land area is smaller than average, with dashed lines as polygon borders
+
+```{r, lines}
+cds.load$largeland<-1
+cds.load$largeland[cds.load$ALAND<=mean(cds.load$ALAND)]<-2
+colours<-c("blue","red")
+leaflet() %>%
+  #draw polygons on OpenStreetMap.France
+  addProviderTiles(providers$OpenStreetMap.France, options = providerTileOptions(noWrap = TRUE)) %>%
+  addPolygons(data=cds.load,weight=0.6,stroke="black",dashArray="4 1 2 3",color=colours[cds.load$largeland])
+
+```
+
