@@ -6,25 +6,33 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+require(rgdal)
+require(leaflet)
+require(leaflet.extras)
+
+require(dplyr)
+require(readxl)
+require(stringr)
 ```
 
-## R Markdown
+# Getting Spatial Data to draw polygons on world map
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r, loading}
+cds.load <- readOGR("./cb_2015_us_cd114_500k/cb_2015_us_cd114_500k.shp", layer = "cb_2015_us_cd114_500k", GDAL1_integer64_policy = TRUE)
+plot(cds.load)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
+# Merging Table Data to my shapefile
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r, merging}
+op_data<- read_excel("Geographies_of_Opportunity_Ranking_Well_Being_by_Congressional_District_(114th_Congress).xlsx") %>%
+  mutate(Number = str_pad(Number, 4, pad = "0"))
+op_white<-op_data[op_data$`White (%)`>50,]
+op_nonwhite<-op_data[op_data$`White (%)`<=50,]
+# Create 2 data tables with different portions of White #Population
+cds1 <- cds.load[cds.load$GEOID  %in% op_white$Number,]
+cds2 <- cds.load[cds.load$GEOID  %in% op_nonwhite$Number,]
+cds1@data <- merge(cds1@data, op_white, sort = FALSE, by.x = "GEOID", by.y = "Number")
+cds2@data <- merge(cds2@data, op_nonwhite, sort = FALSE, by.x = "GEOID", by.y = "Number")
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
