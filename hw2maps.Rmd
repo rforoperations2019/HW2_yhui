@@ -36,3 +36,23 @@ cds2 <- cds.load[cds.load$GEOID  %in% op_nonwhite$Number,]
 cds1@data <- merge(cds1@data, op_white, sort = FALSE, by.x = "GEOID", by.y = "Number")
 cds2@data <- merge(cds2@data, op_nonwhite, sort = FALSE, by.x = "GEOID", by.y = "Number")
 ```
+
+# Blank map with basemap,overlay groups, and layer control
+
+```{r, controls}
+leaflet() %>%
+  # Use world map as my basemap
+  addProviderTiles("Esri.WorldImagery",group = "World Imagery") %>%
+  addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>%
+  #Design overlay groups: 2 different polygons representing 2 #populations with different White portion
+  addPolygons(data=cds1,weight=0.5,color="#ff00f8",fillColor="#6474e5",fillOpacity=0.8,group = "white over 50%")%>%
+  addPolygons(data=cds2,weight=0.5,color="#2ffb01",fillColor="#6474e7",fillOpacity=0.8,group = "white below 50%")%>%
+  # Layers control
+  addLayersControl(
+    baseGroups = c("World Imagery",  "Toner Lite"),
+    overlayGroups = c("white over 50%","white below 50%"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+
+```
+
